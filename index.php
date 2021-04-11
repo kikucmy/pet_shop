@@ -2,14 +2,30 @@
 
 require_once __DIR__ . '/functions.php';
 
+// キーワードの取得
+$keyword = h($_GET['keyword']);
+
 // データベースに接続
 $dbh = connectDb();
 
-// SQL文の組み立て
+// SQL文の組み立て(共通部分)
 $sql = 'SELECT * FROM animals';
 
 // プリペアドステートメントの準備
 $stmt = $dbh->prepare($sql);
+
+// キーワードが入力されている場合
+if (!empty($keyword)) {
+    // WHERE句の追加
+    $sql = $sql . ' WHERE description LIKE :keyword';
+
+    // プリペアドステートメントの再設定
+    $stmt = $dbh->prepare($sql);
+
+    // パラメータのバインド
+    $keyword_param = '%' . $keyword . '%';
+    $stmt->bindParam(':keyword', $keyword_param, PDO::PARAM_STR);
+}
 
 // プリペアドステートメントの実行
 $stmt->execute();
@@ -29,6 +45,11 @@ $animals = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </head>
     <body>
         <h2>本日のご紹介ペット！</h2>
+        <form method="get">
+            <label>キーワード</label>:
+            <input name="keyword" type="text" placeholder="キーワードの入力">
+            <input type="submit" value="検索">
+        </form>
         <?php foreach ($animals as $animal): ?>
             <p><?= nl2br(createMsg($animal)) ?></p>
             <hr>
