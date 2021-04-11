@@ -47,7 +47,7 @@ $animals = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <h2>本日のご紹介ペット！</h2>
         <form method="get">
             <label>キーワード</label>:
-            <input name="keyword" type="text" value="キーワードの入力">
+            <input name="keyword" type="text" placeholder="キーワードの入力">
             <input type="submit" value="検索">
         </form>
         <?php foreach ($animals as $animal): ?>
